@@ -1,0 +1,24 @@
+name: 'Annotation sender'
+description: 'Send an annotation to Grafana & Kibana'
+inputs:
+  microservice:
+    description: Microservice name
+    required: true
+  dashboardUID:
+    description: Dashboard UID of Grafana
+    required: true
+  grafanaToken:
+    description: Grafana Token
+    required: true
+  mode:
+    description: mode
+    required: true
+  release:
+    description: Release Version
+    required: true
+  rowList:
+    description: row list separated with a ,
+    required: true
+runs:
+  using: 'node16'
+  main: 'lib/index.js'
