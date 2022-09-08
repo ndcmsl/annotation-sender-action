@@ -8,6 +8,7 @@ const dashboardUID: string = getInput('dashboardUID');
 const panelId: number = parseInt(getInput('release'));
 const grafanaToken: string = getInput('grafanaToken');
 const mode: string = getInput('mode');
+const infrastructure: string = getInput('infrastructure');
 const release: string = getInput('release');
 
 async function addAnnotation(): Promise<void> {
@@ -16,7 +17,7 @@ async function addAnnotation(): Promise<void> {
         dashboardUID,
         panelId,
         time: Date.now(),
-        tags: [mode, microservice],
+        tags: [mode, microservice, infrastructure],
         text: `${microservice} ${release}`
     }
 

@@ -7,6 +7,9 @@ inputs:
   port:
     description: port
     required: true
+  microservice:
+    description: Microservice name
+    required: true
   dashboardUID:
     description: Dashboard UID of Grafana
     required: true
@@ -18,6 +21,9 @@ inputs:
     required: true
   mode:
     description: mode
+    required: true
+  infrastructure:
+    description: infrastructure
     required: true
   release:
     description: Release Version
