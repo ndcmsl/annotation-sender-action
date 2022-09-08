@@ -1,91 +1,43 @@
 import { getInput, setFailed } from '@actions/core';
 import fetch from 'node-fetch';
 
-const microservice = getInput('microservice');
-const dashboardUID = getInput('dashboardUID');
-const grafanaToken = getInput('grafanaToken');
-const mode = getInput('mode');
-const release = getInput('release');
-const rowList = getInput('rowList').split(',');
+const host: string = getInput('host');
+const port: string = getInput('port');
+const microservice: string = getInput('microservice');
+const dashboardUID: string = getInput('dashboardUID');
+const panelId: number = parseInt(getInput('release'));
+const grafanaToken: string = getInput('grafanaToken');
+const mode: string = getInput('mode');
+const release: string = getInput('release');
 
-async function addAnnotationsGrafana(panelIds): Promise<void> {
+async function addAnnotation(): Promise<void> {
 
-    panelIds.forEach(async panelId => {
-
-        const body = {  
-            dashboardUID,
-            panelId,
-            time: Date.now(),
-            tags: [mode, release],
-            text: microservice
-        }
-    
-        const response = await fetch('http://localhost:3000/api/annotations',
-            {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${grafanaToken}`
-                },
-                body: JSON.stringify(body)
-            });
-        const data = await response.json();
-
-    });
-
-}
-
-async function listPanelsDashboardGrafana() {
-
-    let panels: number[] = [];
-    const response = await fetch(`http://localhost:3000/api/dashboards/uid/${dashboardUID}`,
-        {
-            headers: {
-                'Authorization': `Bearer ${grafanaToken}`
-            },
-        });
-
-    const { dashboard : {panels: elements}} = await response.json() as any;
-
-    let lastRowIndex = -1;
-    for (let index = 0; index < elements.length; index++) {
-        const title = elements[index].title;
-
-        if (elements[index].type == 'row') {
-            const { collapsed } = elements[index];
-            if (rowList.includes(title)) {
-                if (collapsed) {
-                    elements[index].panels.forEach(panel => {
-                        panels.push(panel.id);
-                    })
-                }
-                else {
-                    lastRowIndex = index;
-                }
-            }
-            else {
-                lastRowIndex = -1;
-            }
-        }
-        else {
-            if (lastRowIndex != -1) {
-                panels.push(elements[index].id);
-            }
-        }
-        
+    const body = {
+        dashboardUID,
+        panelId,
+        time: Date.now(),
+        tags: [mode, microservice],
+        text: `${microservice} ${release}`
     }
 
-    return panels;
+    await fetch(`http://${host}:${port}/api/annotations`,
+        {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${grafanaToken}`
+            },
+            body: JSON.stringify(body)
+        });
 }
 
 async function main() {
-    let panelIds: number[] = await listPanelsDashboardGrafana();
-    await addAnnotationsGrafana(panelIds);
+    await addAnnotation();
 }
 
 try {
     main();
 } catch (error) {
-    setFailed(error.message); 
+    setFailed(error.message);
 }

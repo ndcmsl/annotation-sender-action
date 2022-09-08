@@ -1,11 +1,17 @@
 name: 'Annotation sender'
-description: 'Send an annotation to Grafana & Kibana'
+description: 'Send an annotation to Grafana'
 inputs:
-  microservice:
-    description: Microservice name
+  host:
+    description: host
+    required: true
+  port:
+    description: port
     required: true
   dashboardUID:
     description: Dashboard UID of Grafana
+    required: true
+  panelId:
+    description: PanelId
     required: true
   grafanaToken:
     description: Grafana Token
@@ -15,9 +21,6 @@ inputs:
     required: true
   release:
     description: Release Version
-    required: true
-  rowList:
-    description: row list separated with a ,
     required: true
 runs:
   using: 'node16'
